@@ -1,12 +1,12 @@
-export const state = {}
-export const mutations = {}
-export const actions = {}
-export const getter = {}
+const state = {}
+const mutations = {}
+const actions = {}
+const getters = {}
 
 export default {
   namespaced: true,
   state,
   mutations,
   actions,
-  getter
+  getters
 }
