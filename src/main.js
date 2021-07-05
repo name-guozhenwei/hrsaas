@@ -14,7 +14,9 @@ import router from './router'
 
 import '@/icons' // icon
 import '@/permission' // permission control
-
+// 将request方法,挂载到原型上
+import request from '@/utils/request'
+Vue.prototype.$request = request
 // set ElementUI lang to EN
 Vue.use(ElementUI, { locale })
 // 如果想要中文版 element-ui，按如下方式声明

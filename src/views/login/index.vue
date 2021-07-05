@@ -32,8 +32,7 @@
           ref="password"
           v-model="loginForm.password"
           :type="passwordType"
-          placeholder="Password"
-          name="password"
+          placeholder="请输入密码"
           tabindex="2"
           auto-complete="on"
           @keyup.enter.native="handleLogin"
@@ -56,25 +55,20 @@
 
 <script>
 import { validMobile } from '@/utils/validate'
+import { mapActions } from 'vuex'
 
 export default {
   name: 'Login',
   data() {
     // 自定义效验函数
     const validateMobile = (rule, value, callback) => {
+      // console.log(rule, value, callback)
       if (!validMobile(value)) {
         callback(new Error('手机号有误'))
       } else {
         callback()
       }
     }
-    // const validatePassword = (rule, value, callback) => {
-    //   if (value.length < 6) {
-    //     callback(new Error('The password can not be less than 6 digits'))
-    //   } else {
-    //     callback()
-    //   }
-    // }
     return {
       loginForm: {
         mobile: '13800000002',
@@ -85,7 +79,8 @@ export default {
           { required: true, message: '请输入手机号', trigger: ['blur', 'change'] },
           { validator: validateMobile, trigger: ['blur', 'change'] }
         ],
-        password: [{ required: true, message: '请输入手机号', trigger: ['blur', 'change'] },
+        password: [
+          { required: true, message: '请输入验证码', trigger: ['blur', 'change'] },
           { min: 6, max: 16, message: '密码必须是6-16位', trigger: ['blur', 'change'] }
         ]
       },
@@ -103,6 +98,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions('user', ['login']),
     showPwd() {
       if (this.passwordType === 'password') {
         this.passwordType = ''
@@ -113,20 +109,18 @@ export default {
         this.$refs.password.focus()
       })
     },
+    // 点击登入,发送登入请求
     handleLogin() {
       this.$refs.loginForm.validate(valid => {
-        if (valid) {
-          this.loading = true
-          this.$store.dispatch('user/login', this.loginForm).then(() => {
-            this.$router.push({ path: this.redirect || '/' })
-            this.loading = false
-          }).catch(() => {
-            this.loading = false
-          })
-        } else {
-          console.log('error submit!!')
-          return false
-        }
+        if (!valid) return
+        // 校验通过发送登入请求
+        this.login(this.loginForm).then(res => {
+          // 登录成功,跳转首页
+          this.$router.push('/')
+        }).catch(error => {
+          console.dir(error)
+          this.$message.error(error.message)
+        })
       })
     }
   }
