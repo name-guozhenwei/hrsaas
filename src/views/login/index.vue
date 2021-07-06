@@ -115,11 +115,12 @@ export default {
         if (!valid) return
         // 校验通过发送登入请求
         this.login(this.loginForm).then(res => {
+          // console.log(res)
           // 登录成功,跳转首页
+          this.$message.success('登录成功')
           this.$router.push('/')
-        }).catch(error => {
-          console.dir(error)
-          this.$message.error(error.message)
+        }).finally(() => {
+          this.loading = false
         })
       })
     }
