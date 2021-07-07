@@ -5,6 +5,7 @@ import request from '@/utils/request'
  * @returns
  */
 export const reqLogin = (obj) => {
+  // console.log(11111, obj)
   return request({
     method: 'post',
     url: '/sys/login',
@@ -15,7 +16,7 @@ export const reqLogin = (obj) => {
  * 获取用户基本资料
  * @returns
  */
-export const reqGetUserInfo = (token) => {
+export const reqGetUserInfo = () => {
   return request({
     method: 'post',
     url: '/sys/profile'

@@ -111,9 +111,12 @@ export default {
     },
     // 点击登入,发送登入请求
     handleLogin() {
-      this.$refs.loginForm.validate(valid => {
+      this.$refs.loginForm.validate(async valid => {
         if (!valid) return
+        this.loading = true
         // 校验通过发送登入请求
+        // console.log('00000000', this.loginForm)
+        // console.log('222222', this.loginForm.mobile)
         this.login(this.loginForm).then(res => {
           // console.log(res)
           // 登录成功,跳转首页

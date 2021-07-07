@@ -14,6 +14,9 @@ import router from './router'
 
 import '@/icons' // icon
 import '@/permission' // permission control
+import { imgerror, color } from '@/directives'
+Vue.directive('imgerror', imgerror)
+Vue.directive('color', color)
 // 将request方法,挂载到原型上
 import request from '@/utils/request'
 Vue.prototype.$request = request
