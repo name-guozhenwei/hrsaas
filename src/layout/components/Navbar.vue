@@ -20,11 +20,11 @@
               首页
             </el-dropdown-item>
           </router-link>
-          <a target="_blank" href="https://https://gitee.com/zhenwei_guo/hrsaas/">
+          <a target="_blank" href="https://gitee.com/zhenwei_guo/hrsaas/">
             <el-dropdown-item>项目地址</el-dropdown-item>
           </a>
           <el-dropdown-item divided @click.native="clicklogout">
-            <span style="display:block;">退出登录</span>
+            <span v-color="color" style="display:block;">退出登录</span>
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
@@ -43,7 +43,8 @@ export default {
   },
   data() {
     return {
-      defaultImg: Img
+      defaultImg: Img,
+      color: 'red'
     }
   },
   computed: {

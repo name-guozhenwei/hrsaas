@@ -35,6 +35,7 @@ request.interceptors.response.use(function(response) {
   return res
 }, function(error) {
   console.dir(error) // 便于后期调试
+  console.log(error)
   if (error.response.status === 401 && error.response.data.code === 10002) {
     // 说明 token 过期了需要重新登录
     Message.error('登录已过期,请重新登录')

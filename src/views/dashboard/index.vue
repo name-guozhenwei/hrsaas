@@ -1,6 +1,10 @@
 <template>
   <div class="dashboard-container">
-    首页
+    <div class="app-container">
+      <h2>
+        首页
+      </h2>
+    </div>
   </div>
 </template>
 
@@ -13,3 +17,4 @@ export default {
 <style>
 
 </style>
+

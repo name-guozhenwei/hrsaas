@@ -14,9 +14,18 @@ import router from './router'
 
 import '@/icons' // icon
 import '@/permission' // permission control
-import { imgerror, color } from '@/directives'
-Vue.directive('imgerror', imgerror)
-Vue.directive('color', color)
+// import { imgerror, color } from '@/directives'
+// Vue.directive('imgerror', imgerror)
+// Vue.directive('color', color)
+import * as directives from '@/directives'
+// console.log(directives)
+// for (const key in directives) {
+//   Vue.directive(key, directives[key])
+// }
+// 批量注册全局的自定义指令
+Object.keys(directives).forEach(key => {
+  Vue.directive(key, directives[key])
+})
 // 将request方法,挂载到原型上
 import request from '@/utils/request'
 Vue.prototype.$request = request
