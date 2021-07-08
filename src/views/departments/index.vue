@@ -7,6 +7,7 @@
           <el-col :span="20">
             <span>江苏传智播客教育科技股份有限公司</span>
           </el-col>
+
           <el-col :span="4">
             <el-row type="flex">
               <!-- 两个内容 -->
@@ -22,53 +23,54 @@
                     <el-dropdown-item>添加子部门</el-dropdown-item>
                   </el-dropdown-menu>
                 </el-dropdown>
+
               </el-col>
             </el-row>
           </el-col>
         </el-row>
-      </el-card>
-    </div>
-    <el-tree
-      :data="departs"
-      :props="defaultProps"
-      :default-expand-all="true"
-    >
-      <!-- 用了一个行列布局 -->
-      <template #default="{ data }">
-        <el-row
-          type="flex"
-          justify="space-between"
-          align="middle"
-          style="height: 40px; width: 100%;"
+        <el-tree
+          :data="departs"
+          :props="defaultProps"
+          :default-expand-all="true"
         >
-          <el-col :span="20">
-            <span>{{ data.name }}</span>
-          </el-col>
-          <el-col :span="4">
-            <el-row type="flex" justify="end">
-              <!-- 两个内容 -->
-              <el-col>{{ data.manager }}</el-col>
-              <el-col>
-                <!-- 下拉菜单 element -->
-                <el-dropdown>
-                  <span> 操作<i class="el-icon-arrow-down" /> </span>
-                  <!-- 下拉菜单 -->
-                  <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item>添加子部门</el-dropdown-item>
-                    <el-dropdown-item>编辑部门</el-dropdown-item>
-                    <el-dropdown-item>删除部门</el-dropdown-item>
-                  </el-dropdown-menu>
-                </el-dropdown>
+          <!-- 用了一个行列布局 -->
+          <template #default="{ data }">
+            <el-row
+              type="flex"
+              justify="space-between"
+              align="middle"
+              style="height: 40px; width: 100%;"
+            >
+              <el-col :span="20">
+                <span>{{ data.name }}</span>
+              </el-col>
+              <el-col :span="4">
+                <el-row type="flex" justify="end">
+                  <!-- 两个内容 -->
+                  <el-col>{{ data.manager }}</el-col>
+                  <el-col>
+                    <!-- 下拉菜单 element -->
+                    <el-dropdown>
+                      <span> 操作<i class="el-icon-arrow-down" /> </span>
+                      <!-- 下拉菜单 -->
+                      <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item>添加子部门</el-dropdown-item>
+                        <el-dropdown-item>编辑部门</el-dropdown-item>
+                        <el-dropdown-item>删除部门</el-dropdown-item>
+                      </el-dropdown-menu>
+                    </el-dropdown>
+                  </el-col>
+                </el-row>
               </el-col>
             </el-row>
-          </el-col>
-        </el-row>
-      </template>
-    </el-tree>
+          </template>
+        </el-tree>
+
+      </el-card>
+
+    </div>
   </div>
-
 </template>
-
 <script>
 export default {
   name: 'Departments',
@@ -78,9 +80,7 @@ export default {
         {
           name: '总裁办',
           manager: '曹操',
-          children: [
-            { name: '董事会', manager: '曹丕' }
-          ]
+          children: [{ name: '董事会', manager: '曹丕' }]
         },
         { name: '行政部', manager: '刘备' },
         { name: '人事部', manager: '孙权' }
