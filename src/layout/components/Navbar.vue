@@ -23,7 +23,7 @@
           <a target="_blank" href="https://https://gitee.com/zhenwei_guo/hrsaas/">
             <el-dropdown-item>项目地址</el-dropdown-item>
           </a>
-          <el-dropdown-item divided @click.native="logout">
+          <el-dropdown-item divided @click.native="clicklogout">
             <span style="display:block;">退出登录</span>
           </el-dropdown-item>
         </el-dropdown-menu>
@@ -62,9 +62,10 @@ export default {
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
     },
-    logout() {
-      this.$store.dispatch('user/logout')
+    clicklogout() {
+      this.logout()
       this.$router.push('/login')
+      this.$message.success('退出成功')
     }
   }
 }

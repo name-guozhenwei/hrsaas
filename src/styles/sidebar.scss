@@ -68,7 +68,7 @@
       border: none;
       height: 100%;
       width: 100% !important;
-      a{
+     
         li{
           .svg-icon{
             color: #fff;
@@ -88,8 +88,12 @@
             span{
               color: #43a7fe;
             }
+            .el-icon-s-help {
+              color: #43a7fe;
+            }
+
           }
-        }
+        
       }
     }
 

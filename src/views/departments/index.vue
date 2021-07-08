@@ -1,12 +1,12 @@
 <template>
-  <div class="dashboard-container">
-    首页
+  <div class="departments">
+    组织架构
   </div>
 </template>
 
 <script>
 export default {
-  name: 'Dashboard'
+  name: 'Departments'
 }
 </script>
 

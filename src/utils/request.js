@@ -1,6 +1,7 @@
 import axios from 'axios'
 import { Message } from 'element-ui'
 import store from '@/store'
+import router from '@/router'
 // 创建一个axios的实例
 const request = axios.create({
   baseURL: process.env.VUE_APP_BASE_API, // url = base url + request url
@@ -33,10 +34,19 @@ request.interceptors.response.use(function(response) {
   }
   return res
 }, function(error) {
-  // 对响应错误做点什么
-  // 服务器错误. 400 404, 500
   console.dir(error) // 便于后期调试
-  Message.error(error.message) // 便于错误消息
+  if (error.response.status === 401 && error.response.data.code === 10002) {
+    // 说明 token 过期了需要重新登录
+    Message.error('登录已过期,请重新登录')
+    // 进行退出action操作 , 提交action
+    store.dispatch('user/logout')
+    // 拦截到登入页 , 重新登录
+    router.push('/login')
+  } else {
+    // 服务器错误. 400 404, 500
+    Message.error(error.message) // 便于错误消息
+  }
+  // 对响应错误做点什么
   return Promise.reject(error)
 })
 
