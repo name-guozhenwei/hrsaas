@@ -35,7 +35,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import Hamburger from '@/components/Hamburger'
-import Img from '@/assets/common/head.jpg'
+import Img from '@/assets/common/leiou.jpeg'
 
 export default {
   components: {

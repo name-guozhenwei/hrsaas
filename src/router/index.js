@@ -14,13 +14,13 @@ import settingRouter from './modules/setting'
 import socialRouter from './modules/social'
 /* Layout */
 export const asyncRoutes = [
-  approvalsRouter,
   departmentsRouter,
+  settingRouter,
   employeesRouter,
   permissionRouter,
+  approvalsRouter,
   attendancesRouter,
   salarysRouter,
-  settingRouter,
   socialRouter
 ]
 export const constantRoutes = [
