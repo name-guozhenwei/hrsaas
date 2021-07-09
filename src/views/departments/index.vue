@@ -3,101 +3,110 @@
     <div class="app-container">
       <el-card class="tree-card">
         <!-- 用了一个行列布局 -->
-        <el-row type="flex" justify="space-between" align="middle" style="height: 40px">
-          <el-col :span="20">
-            <span>江苏传智播客教育科技股份有限公司</span>
-          </el-col>
-
-          <el-col :span="4">
-            <el-row type="flex">
-              <!-- 两个内容 -->
-              <el-col :span="12">负责人</el-col>
-              <el-col :span="12">
-                <!-- 下拉菜单 element -->
-                <el-dropdown>
-                  <span>
-                    操作<i class="el-icon-arrow-down" />
-                  </span>
-                  <!-- 下拉菜单 -->
-                  <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item>添加子部门</el-dropdown-item>
-                  </el-dropdown-menu>
-                </el-dropdown>
-
-              </el-col>
-            </el-row>
-          </el-col>
-        </el-row>
+        <tree-tools :node-data="company" :is-root="true" />
+        <!-- 放置一个el-tree组件 -->
         <el-tree
           :data="departs"
           :props="defaultProps"
-          :default-expand-all="true"
+          default-expand-all
         >
           <!-- 用了一个行列布局 -->
           <template #default="{ data }">
-            <el-row
-              type="flex"
-              justify="space-between"
-              align="middle"
-              style="height: 40px; width: 100%;"
-            >
-              <el-col :span="20">
-                <span>{{ data.name }}</span>
-              </el-col>
-              <el-col :span="4">
-                <el-row type="flex" justify="end">
-                  <!-- 两个内容 -->
-                  <el-col>{{ data.manager }}</el-col>
-                  <el-col>
-                    <!-- 下拉菜单 element -->
-                    <el-dropdown>
-                      <span> 操作<i class="el-icon-arrow-down" /> </span>
-                      <!-- 下拉菜单 -->
-                      <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item>添加子部门</el-dropdown-item>
-                        <el-dropdown-item>编辑部门</el-dropdown-item>
-                        <el-dropdown-item>删除部门</el-dropdown-item>
-                      </el-dropdown-menu>
-                    </el-dropdown>
-                  </el-col>
-                </el-row>
-              </el-col>
-            </el-row>
+            <tree-tools :node-data="data" @del-depts="getDepartments" />
           </template>
         </el-tree>
-
       </el-card>
 
     </div>
   </div>
 </template>
 <script>
+import TreeTools from './components/tree-tools.vue'
+import { reqGetDepartment } from '@/api/departments'
+import { tranListToTreeData } from '@/utils/index'
 export default {
   name: 'Departments',
+  components: {
+    TreeTools
+  },
+
   data() {
     return {
       departs: [
-        {
-          name: '总裁办',
-          manager: '曹操',
-          children: [{ name: '董事会', manager: '曹丕' }]
-        },
-        { name: '行政部', manager: '刘备' },
-        { name: '人事部', manager: '孙权' }
+        // {
+        //   name: '总裁办',
+        //   manager: '曹操',
+        //   children: [{ name: '董事会', manager: '曹丕' }]
+        // },
+        // { name: '行政部', manager: '刘备' },
+        // { name: '人事部', manager: '孙权' }
       ],
       defaultProps: {
         label: 'name',
         children: 'children'
-      }
+      },
+      company: { }
+
     }
+  },
+  created() {
+    this.getDepartments()
+  },
+  methods: {
+    async getDepartments() {
+      const { data } = await reqGetDepartment()
+      // console.log(data)
+      this.company = {
+        name: data.companyName,
+        manager: '负责人'
+      }
+      this.departs = tranListToTreeData(data.depts, '')
+    }
+
   }
+
 }
 </script>
 
-<style scoped>
-.tree-card {
-  padding: 30px 30px;
-  font-size:14px;
+<style lang='scss' scoped>
+.el-tree {
+  ::v-deep {
+    // 小三角的样式, 去掉默认的小三角的旋转效果
+    .el-tree-node__expand-icon.expanded {
+      -webkit-transform: rotate(0deg);
+      transform: rotate(0deg);
+    }
+    // 有子节点 且未展开 +
+    .el-icon-caret-right:before {
+      background: url("~@/assets/common/add-circle.png") no-repeat 0 0;
+      content: '';
+      display: block;
+      width: 16px;
+      height: 16px;
+      font-size: 16px;
+      background-size: 16px;
+    }
+    // 有子节点 且已展开 -
+    .el-tree-node__expand-icon.expanded.el-icon-caret-right:before{
+      background: url("~@/assets/common/minus-circle.png") no-repeat 0 0;
+      content: '';
+      display: block;
+      width: 16px;
+      height: 16px;
+      font-size: 16px;
+      background-size: 16px;
+    }
+    // 没有子节点
+    .el-tree-node__expand-icon.is-leaf::before  {
+      background: url("~@/assets/common/user-filling.png") no-repeat 0 0;
+      content: '';
+      display: block;
+      width: 16px;
+      height: 16px;
+      font-size: 16px;
+      background-size: 16px;
+    }
+  }
 }
 </style>
 
