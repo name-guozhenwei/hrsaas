@@ -3,7 +3,7 @@
     <div class="app-container">
       <el-card class="tree-card">
         <!-- 用了一个行列布局 -->
-        <tree-tools :node-data="company" :is-root="true" />
+        <TreeTools :node-data="company" :is-root="true" />
         <!-- 放置一个el-tree组件 -->
         <el-tree
           :data="departs"
@@ -12,40 +12,50 @@
         >
           <!-- 用了一个行列布局 -->
           <template #default="{ data }">
-            <tree-tools :node-data="data" @del-depts="getDepartments" />
+            <TreeTools
+              :node-data="data"
+              @add-depts="handleAddDepts"
+              @del-depts="getDepartments"
+            />
           </template>
         </el-tree>
       </el-card>
+      <AddDept
+        ref="addDept"
+        :show-dialog="showDialog"
+        :dept-list="deptList"
+        :node-data="nodeData"
+        @close-dialog="handleClose"
+      />
 
     </div>
   </div>
 </template>
 <script>
 import TreeTools from './components/tree-tools.vue'
+import AddDept from './components/add-dept.vue'
 import { reqGetDepartment } from '@/api/departments'
 import { tranListToTreeData } from '@/utils/index'
 export default {
   name: 'Departments',
   components: {
-    TreeTools
+    TreeTools,
+    AddDept
   },
 
   data() {
     return {
-      departs: [
-        // {
-        //   name: '总裁办',
-        //   manager: '曹操',
-        //   children: [{ name: '董事会', manager: '曹丕' }]
-        // },
-        // { name: '行政部', manager: '刘备' },
-        // { name: '人事部', manager: '孙权' }
-      ],
+      // 树形的数据
+      departs: [],
+      // 列表式的数据
+      deptList: [],
       defaultProps: {
         label: 'name',
         children: 'children'
       },
-      company: { }
+      company: { name: '江苏传智播客教育科技股份有限公司', manager: '负责人' },
+      showDialog: false,
+      nodeData: {} // 正在操作的部门
 
     }
   },
@@ -60,7 +70,21 @@ export default {
         name: data.companyName,
         manager: '负责人'
       }
+      // 需要将其转换成树形结构
       this.departs = tranListToTreeData(data.depts, '')
+      this.deptList = data.depts // 列表式数据
+    },
+    handleClose(flag) {
+      this.showDialog = flag
+    },
+    // 新增子部门
+    handleAddDepts(nodeData) {
+      // console.log(11)
+      this.showDialog = true
+      this.nodeData = nodeData
+      // console.log('index-this.departs:', this.departs, '')
+      // console.log(nodeData)
+      // this.$refs.addDept.getSimpleUserList()
     }
 
   }

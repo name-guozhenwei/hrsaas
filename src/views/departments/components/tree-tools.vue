@@ -47,6 +47,7 @@ export default {
   methods: {
     handleCommand(type) {
       if (type === 'add') {
+        this.$emit('add-depts', this.nodeData) // 将来添加子部门的需要
         console.log('添加部门')
       }
       if (type === 'edit') {
