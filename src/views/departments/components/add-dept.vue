@@ -34,6 +34,7 @@
 <script>
 import { reqGetEmployeeSimple } from '@/api/user'
 import { reqAddDepartments, reqGetDepartDetail, reqUpdateDepartments } from '@/api/departments'
+// import { Loading } from 'element-ui'
 export default {
   // 需要传入一个props变量来控制 显示或者隐藏
   props: {

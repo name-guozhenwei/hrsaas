@@ -1,7 +1,7 @@
 <template>
   <div class="departments-container">
     <div class="app-container">
-      <el-card class="tree-card">
+      <el-card v-loading="loading" class="tree-card">
         <!-- 用了一个行列布局 -->
         <TreeTools
           :node-data="company"
@@ -61,7 +61,8 @@ export default {
       },
       company: { name: '江苏传智播客教育科技股份有限公司', manager: '负责人' },
       showDialog: false,
-      nodeData: {} // 正在操作的部门
+      nodeData: {}, // 正在操作的部门
+      loading: false
 
     }
   },
@@ -70,6 +71,7 @@ export default {
   },
   methods: {
     async getDepartments() {
+      this.loading = true
       const { data } = await reqGetDepartment()
       // console.log(data)
       this.company = {
@@ -79,6 +81,7 @@ export default {
       // 需要将其转换成树形结构
       this.departs = tranListToTreeData(data.depts, '')
       this.deptList = data.depts //
+      this.loading = false
     },
     // handleClose(flag) {
     //   this.showDialog = flag
