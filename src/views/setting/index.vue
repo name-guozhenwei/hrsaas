@@ -9,6 +9,7 @@
               icon="el-icon-plus"
               size="small"
               type="primary"
+              @click="showDialog = true"
             >
               新增角色</el-button>
             <!-- 表格 -->
@@ -47,17 +48,34 @@
               @current-change="handleCurrentChange"
             />
           </el-tab-pane>
+          <!-- 公司信息 -->
           <el-tab-pane label="公司信息">
-            <!-- 公司信息 -->
+            公司内容
           </el-tab-pane>
         </el-tabs>
       </el-card>
+      <!-- 弹层 -->
+      <el-dialog title="添加角色" :visible="showDialog" @close="showDialog = false">
+        <el-form ref="form" label-width="100px" :model="form" :rules="rules">
+          <el-form-item label="添加角色" prop="name">
+            <el-input v-model="form.name" placeholder="请输入角色名称" />
+          </el-form-item>
+          <el-form-item label="角色描述" prop="description">
+            <el-input v-model="form.description" placeholder="请输入角色描述" />
+          </el-form-item>
+        </el-form>
+        <template>
+          <el-button type="primary" @click="clickSubmit">确认</el-button>
+          <el-button @click="showDialog = false">取消</el-button>
+
+        </template>
+      </el-dialog>
     </div>
   </div>
 </template>
 
 <script>
-import { reqGetRoleList, reqDelRole } from '@/api/setting'
+import { reqGetRoleList, reqDelRole, reqAddRole } from '@/api/setting'
 // import { Loading } from 'element-ui'
 export default {
   name: 'Setting',
@@ -67,7 +85,22 @@ export default {
       total: 0,
       page: 1, // 当前页
       pagesize: 3, // 每页总数
-      Loading: false
+      Loading: false,
+      showDialog: false,
+      // 校验的表单
+      form: {
+        name: '', // 角色名字
+        description: ''
+      },
+      // 检验的规则
+      rules: {
+        name: [
+          { required: true, message: '角色名称不能为空', trigger: ['blur', 'change'] }
+        ],
+        description: [
+          { required: true, message: '角色描述不能为空', trigger: ['blur', 'change'] }
+        ]
+      }
 
     }
   },
@@ -122,6 +155,23 @@ export default {
         this.getRoleList()
       }).catch(error => {
         console.log(error)
+      })
+    },
+    // 添加角色
+    clickSubmit() {
+      this.$refs.form.validate(async flag => {
+        // 表单校验不通过 直接 return
+        if (!flag) return
+        // 检验通过 发请求拿数据
+        await reqAddRole(this.form)
+        // 添加之后关闭弹层
+        this.showDialog = false
+        // 提示用户添加成功
+        this.$message.success('添加成功')
+        // 调用数据,重新渲染
+        this.getRoleList()
+        // 添加成功后清除表单内容
+        this.$refs.form.resetFields()
       })
     }
   }

@@ -26,3 +26,16 @@ export const reqDelRole = (id) => {
     url: '/sys/role/' + id
   })
 }
+/**
+ * 添加角色
+ * @param {*} form 表单数据
+ * @returns
+ */
+export const reqAddRole = (form) => {
+  return request({
+    method: 'post',
+    url: '/sys/role',
+    data: form
+
+  })
+}
