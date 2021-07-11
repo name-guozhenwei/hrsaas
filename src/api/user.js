@@ -33,3 +33,12 @@ export const reqGetBaseInfo = (id) => {
     url: '/sys/user/' + id
   })
 }
+/**
+ * 获取员工基本简单列表
+ */
+export const reqGetEmployeeSimple = () => {
+  return request({
+    method: 'get',
+    url: '/sys/user/simple'
+  })
+}

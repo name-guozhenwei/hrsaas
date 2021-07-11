@@ -51,7 +51,8 @@ export default {
         console.log('添加部门')
       }
       if (type === 'edit') {
-        console.log('编辑操作')
+        // console.log('编辑操作')
+        this.$emit('edit-depts', this.nodeData)
       }
       // 实现删除部门  使用element ui框架
       if (type === 'del') {

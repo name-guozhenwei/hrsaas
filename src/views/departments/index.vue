@@ -3,12 +3,17 @@
     <div class="app-container">
       <el-card class="tree-card">
         <!-- 用了一个行列布局 -->
-        <TreeTools :node-data="company" :is-root="true" />
+        <TreeTools
+          :node-data="company"
+          :is-root="true"
+          @add-depts="handleAddDepts"
+        />
         <!-- 放置一个el-tree组件 -->
         <el-tree
           :data="departs"
           :props="defaultProps"
           default-expand-all
+          @add-depts="handleAddDepts"
         >
           <!-- 用了一个行列布局 -->
           <template #default="{ data }">
@@ -16,16 +21,17 @@
               :node-data="data"
               @add-depts="handleAddDepts"
               @del-depts="getDepartments"
+              @edit-depts="handleEditDepts"
             />
           </template>
         </el-tree>
       </el-card>
       <AddDept
         ref="addDept"
-        :show-dialog="showDialog"
+        :show-dialog.sync="showDialog"
         :dept-list="deptList"
         :node-data="nodeData"
-        @close-dialog="handleClose"
+        @add-depts="getDepartments"
       />
 
     </div>
@@ -72,11 +78,11 @@ export default {
       }
       // 需要将其转换成树形结构
       this.departs = tranListToTreeData(data.depts, '')
-      this.deptList = data.depts // 列表式数据
+      this.deptList = data.depts //
     },
-    handleClose(flag) {
-      this.showDialog = flag
-    },
+    // handleClose(flag) {
+    //   this.showDialog = flag
+    // },
     // 新增子部门
     handleAddDepts(nodeData) {
       // console.log(11)
@@ -85,6 +91,18 @@ export default {
       // console.log('index-this.departs:', this.departs, '')
       // console.log(nodeData)
       // this.$refs.addDept.getSimpleUserList()
+    },
+    // 编辑部门
+    handleEditDepts(nodeData) {
+      // 显示弹框
+      this.showDialog = true
+      //
+      this.nodeData = nodeData
+      this.$nextTick(() => {
+      // 通过ref查找元素
+        this.$refs.addDept.getEmployeeSimple()
+        this.$refs.addDept.GetDepartDetail(nodeData.id)
+      })
     }
 
   }
