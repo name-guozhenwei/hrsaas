@@ -14,13 +14,13 @@
               新增角色</el-button>
             <!-- 表格 -->
             <el-table :data="list">
-              <el-table-column :index="indexMethod" label="序号" width="50" type="index" />
-              <el-table-column prop="name" label="角色名称" width="120" />
-              <el-table-column prop="description" label="描述" width="240" />
-              <el-table-column label="操作" width="300">
+              <el-table-column :index="indexMethod" label="序号" width="120" type="index" />
+              <el-table-column prop="name" label="角色名称" width="240" />
+              <el-table-column prop="description" label="描述" width="300" />
+              <el-table-column label="操作" width="400">
                 <template #default="{row}">
                   <el-button size="small" type="success">分配权限</el-button>
-                  <el-button size="small" type="primary">编辑</el-button>
+                  <el-button size="small" type="primary" @click="edit(row.id)">编辑</el-button>
                   <el-button size="small" type="danger" @click="delRole(row.id)">删除</el-button>
                 </template>
 
@@ -50,12 +50,31 @@
           </el-tab-pane>
           <!-- 公司信息 -->
           <el-tab-pane label="公司信息">
-            公司内容
-          </el-tab-pane>
+            <el-alert
+              title="对公司名称、公司地址、营业执照、公司地区的更新，将使得公司资料被重新审核，请谨慎修改"
+              type="info"
+              show-icon
+              :closable="false"
+            />
+            <!-- 表单 -->
+            <el-form label-width="120px" style="margin-top:50px">
+              <el-form-item label="公司名称">
+                <el-input v-model="companyForm.name" disabled style="width:400px" />
+              </el-form-item>
+              <el-form-item label="公司地址">
+                <el-input v-model="companyForm.companyAddress" disabled style="width:400px" />
+              </el-form-item>
+              <el-form-item label="邮箱">
+                <el-input v-model="companyForm.mailbox" disabled style="width:400px" />
+              </el-form-item>
+              <el-form-item label="备注">
+                <el-input v-model="companyForm.remarks" type="textarea" :rows="3" disabled style="width:400px" />
+              </el-form-item>
+            </el-form></el-tab-pane>
         </el-tabs>
       </el-card>
       <!-- 弹层 -->
-      <el-dialog title="添加角色" :visible="showDialog" @close="showDialog = false">
+      <el-dialog :title="showTitle" :visible="showDialog" @close="showDialog = false">
         <el-form ref="form" label-width="100px" :model="form" :rules="rules">
           <el-form-item label="添加角色" prop="name">
             <el-input v-model="form.name" placeholder="请输入角色名称" />
@@ -75,8 +94,9 @@
 </template>
 
 <script>
-import { reqGetRoleList, reqDelRole, reqAddRole } from '@/api/setting'
-// import { Loading } from 'element-ui'
+import { reqGetRoleList, reqDelRole, reqAddRole, reqGetRoleDetail, reqUpdateRole } from '@/api/setting'
+import { reqGetCompanyById } from '@/api/company'
+import { mapState } from 'vuex'
 export default {
   name: 'Setting',
   data() {
@@ -87,6 +107,12 @@ export default {
       pagesize: 3, // 每页总数
       Loading: false,
       showDialog: false,
+      companyForm: {
+        name: '',
+        companyAddress: '',
+        mailbox: '',
+        remarks: ''
+      },
       // 校验的表单
       form: {
         name: '', // 角色名字
@@ -104,9 +130,16 @@ export default {
 
     }
   },
+  computed: {
+    showTitle() {
+      return this.form.id ? '编辑角色' : '添加角色'
+    },
+    ...mapState('user', ['userInfo'])
+  },
   created() {
     // 一进页面就调用角色列表
-    this.getRoleList()
+    this.getRoleList() // 获取角色列表
+    this.getCompanyInfo() // 获取公司信息
   },
   methods: {
     // 角色管理
@@ -162,18 +195,45 @@ export default {
       this.$refs.form.validate(async flag => {
         // 表单校验不通过 直接 return
         if (!flag) return
+        if (this.form.id) {
+          // 编辑操作
+          await reqUpdateRole(this.form)
+        } else {
+          // 添加操作
+          await reqAddRole(this.form)
+        }
         // 检验通过 发请求拿数据
-        await reqAddRole(this.form)
         // 添加之后关闭弹层
         this.showDialog = false
         // 提示用户添加成功
-        this.$message.success('添加成功')
+        this.$message.success('操作成功')
         // 调用数据,重新渲染
         this.getRoleList()
-        // 添加成功后清除表单内容
+        // 添加成功后清空表单内容
+        this.form = {
+          name: '',
+          description: ''
+        }
+        // 重置状态
         this.$refs.form.resetFields()
       })
+    },
+    // 编辑角色
+    async edit(id) {
+      const { data } = await reqGetRoleDetail(id)
+      // console.log(res)
+      this.form = data
+      this.showDialog = true
+      // this.$message.success('')
+    },
+    // 获取公司信息
+    async getCompanyInfo() {
+      const res = await reqGetCompanyById(this.userInfo.companyId)
+      // console.log(res)
+      this.companyForm = res.data
+      // console.log(this.companyForm)
     }
+
   }
 
 }

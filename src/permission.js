@@ -23,8 +23,8 @@ router.beforeEach(async(to, from, next) => {
       // 如果当前vuex中已经有用户资料,就不需要在获取了
       if (!store.state.user.userInfo.userId) {
       // 没有id表示当前用户资料还没有获取过.就获取下一次
-        const res = await store.dispatch('user/getUserInfo')
-        console.log(res)
+        await store.dispatch('user/getUserInfo')
+        // console.log(res)
       }
       next() // 放行
     }
