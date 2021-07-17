@@ -14,6 +14,8 @@ import * as directives from '@/directives'
 import Components from './components'
 // 过滤器
 import * as filters from '@/filters' // 引用工具类
+import Print from 'vue-print-nb'
+Vue.use(Print)
 Object.keys(filters).forEach(key => {
   // 注册过滤器
   Vue.filter(key, filters[key])

@@ -57,7 +57,10 @@
         <el-col :span="12">
           <el-form-item label="员工头像">
             <!-- 放置上传图片 -->
-
+            <ImageUpload
+              ref="staffPhoto"
+              :limit="1"
+            />
           </el-form-item>
         </el-col>
       </el-row>
@@ -89,6 +92,7 @@
 
         <el-form-item label="员工照片">
           <!-- 放置上传图片 -->
+          <ImageUpload ref="picPhoto" :limit="2" />
         </el-form-item>
         <el-form-item label="国家/地区">
           <el-select v-model="formData.nationalArea" class="inputW2">
@@ -282,8 +286,12 @@
 <script>
 import EmployeeEnum from '@/api/constant/employees'
 import { reqGetUserDetailById, reqSaveUserDetailById, reqGetPersonalDetail, reqUpdatePersonal } from '@/api/employees'
-
+import ImageUpload from '@/components/ImageUpload'
+import { mapActions } from 'vuex'
 export default {
+  components: {
+    ImageUpload
+  },
   data() {
     return {
       EmployeeEnum, // 员工枚举数据
@@ -370,23 +378,71 @@ export default {
     this.getPersonalDetail()
   },
   methods: {
+    ...mapActions('user', ['getUserInfo']),
     async getUserDetailById() {
       const { data } = await reqGetUserDetailById(this.userId)
+      // 获取时,要赋值头像
+      this.$refs.staffPhoto.fileList = [
+        { url: data.staffPhoto }
+      ]
       this.userInfo = data
     },
     async saveUser() {
     //  调用父组件
-      await reqSaveUserDetailById(this.userInfo)
+      const staffPhoto = this.$refs.staffPhoto
+      const imgUrl = staffPhoto.fileList[0]?.url
+      if (!staffPhoto.isAllUploadSuccess) {
+        this.$message.error('图片正在上传中,请稍后')
+        return
+      }
+      if (!imgUrl) {
+        this.$message.error('请上传照片')
+        return
+      }
+      await reqSaveUserDetailById({
+        ...this.userInfo,
+        staffPhoto: imgUrl
+
+      })
+      this.getUserInfo()
+
       this.$message.success('保存成功')
     },
     async getPersonalDetail() {
       const { data } = await reqGetPersonalDetail(this.userId) // 获取员工数据
+      // 获取到上传组件(回显)
+      this.$refs.picPhoto.fileList = [
+        { url: data.staffPhoto }
+      ]
       this.formData = data
     },
     async savePersonal() {
-      await reqUpdatePersonal({ ...this.formData, userId: this.userId })
+      const picPhotoRef = this.$refs.picPhoto
+      // 读取上传组件的数据
+      const imgUrl = picPhotoRef.fileList[0]?.url
+      // 是否都全部上传完了
+      const uploadAllSuccess = picPhotoRef.isAllUploadSuccess
+      // 判断 如果没有全部上传,则提示用户没有全部上传完成
+      if (!uploadAllSuccess) {
+        this.$message.error('当前还有文件未上传完成')
+        return
+      }
+      // 非空校验 , 如果用户未上传照片,提示员工上传照片
+      if (!imgUrl) {
+        this.$message.error('照片不能为空,请上传照片')
+        return
+      }
+      // 发请求
+      await reqUpdatePersonal(
+        {
+          ...this.formData,
+          staffPhoto: imgUrl,
+          userId: this.userId
+        }
+      )
       this.$message.success('保存成功')
     }
+
   }
 }
 </script>

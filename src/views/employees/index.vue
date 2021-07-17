@@ -16,6 +16,20 @@
         <el-table border :data="list">
           <el-table-column label="序号" sortable="" type="index" :index="indexMethod" />
           <el-table-column label="姓名" sortable="" prop="username" />
+          <el-table-column label="头像" prop="staffPhoto">
+            <template #default="{row}">
+              <img
+                v-imgerror="defaultImage"
+                :src="row.staffPhoto || defaultImage"
+                class="staff"
+                alt=""
+                @click="clickShowCodeDialog(row.staffPhoto)"
+              >
+
+            </template>
+
+          </el-table-column>
+
           <el-table-column label="手机号" sortable="" prop="mobile" />
           <el-table-column label="工号" sortable="" prop="workNumber" />
           <el-table-column label="聘用形式" sortable="" prop="formOfEmployment" :formatter="formatEmployment" />
@@ -31,7 +45,7 @@
               <el-button type="text" size="small">转正</el-button>
               <el-button type="text" size="small">调岗</el-button>
               <el-button type="text" size="small">离职</el-button>
-              <el-button type="text" size="small">角色</el-button>
+              <el-button type="text" size="small" @click="editRole(row.id)">角色</el-button>
               <el-button type="text" size="small" @click="delEmployee(row.id)">删除</el-button>
             </template>
           </el-table-column>
@@ -55,6 +69,12 @@
 
       </el-card>
       <AddEmployee :show-dialog.sync="showDialog" @add-employee="getUserList" />
+      <el-dialog width="300px" title="二维码" :visible="showCodeDialog" @close="closeDialog">
+        <el-row type="flex" justify="center">
+          <canvas ref="myCanvas" />
+        </el-row>
+      </el-dialog>
+      <AssignRole ref="assignrole" :show-role-dialog.sync="showRoleDialog" :user-id="userId" />
     </div>
   </div>
 </template>
@@ -62,14 +82,17 @@
 <script>
 import { reqGetUserList, reqDelEmployee } from '@/api/employees'
 import obj from '@/api/constant/employees'
+import QrCode from 'qrcode'
 const { hireType } = obj
 import AddEmployee from '@/views/employees/components/add-employee.vue'
 import moment from 'moment'
+import AssignRole from '@/views/employees/components/AssignRole.vue'
 // console.log(obj)
 export default {
   name: 'Employees',
   components: {
-    AddEmployee
+    AddEmployee,
+    AssignRole
   },
   data() {
     return {
@@ -77,7 +100,11 @@ export default {
       size: 5,
       total: 0,
       list: [],
-      showDialog: false
+      showDialog: false,
+      showCodeDialog: false,
+      defaultImage: 'https://dss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=2146034403,1504718527&fm=26&gp=0.jpg',
+      showRoleDialog: false,
+      userId: ''
     }
   },
   created() {
@@ -182,12 +209,38 @@ export default {
         resultArr.push(arr)
       })
       return resultArr
+    },
+
+    // 二维码
+    clickShowCodeDialog(url) {
+      // 判断 有图片才显示二维码
+      if (!url) return
+      this.showCodeDialog = true
+      this.$nextTick(() => {
+        // 如果这里写的是网址,就会跳转到对应网址(二维码分享效果)
+        QrCode.toCanvas(this.$refs.myCanvas, url)
+      })
+    },
+    closeDialog() {
+      this.showCodeDialog = false
+    },
+    // 显示分配角色弹框
+    editRole(id) {
+      this.showRoleDialog = true
+      this.userId = id
+      // this.$refs.assignrole.getUserDetailById(id)
     }
   }
 }
 </script>
 
-<style>
-
+<style lang="scss" scoped>
+.employees-container {
+  .staff {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+  }
+}
 </style>
 
