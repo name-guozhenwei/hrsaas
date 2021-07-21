@@ -41,12 +41,22 @@
           </el-table-column>
           <el-table-column label="操作" sortable="" fixed="right" width="280">
             <template #default="{row}">
-              <el-button type="text" size="small" @click="$router.push(`/employees/detail/${row.id}`)">查看</el-button>
+              <el-button
+                type="text"
+                size="small"
+                :disabled="!checkPermission('POINT-USER-UPDATE')"
+                @click="$router.push(`/employees/detail/${row.id}`)"
+              >查看</el-button>
               <el-button type="text" size="small">转正</el-button>
               <el-button type="text" size="small">调岗</el-button>
               <el-button type="text" size="small">离职</el-button>
               <el-button type="text" size="small" @click="editRole(row.id)">角色</el-button>
-              <el-button type="text" size="small" @click="delEmployee(row.id)">删除</el-button>
+              <el-button
+                type="text"
+                size="small"
+                :disabled="!checkPermission('POINT-USER-DELETE')"
+                @click="delEmployee(row.id)"
+              >删除</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -87,6 +97,7 @@ const { hireType } = obj
 import AddEmployee from '@/views/employees/components/add-employee.vue'
 import moment from 'moment'
 import AssignRole from '@/views/employees/components/AssignRole.vue'
+import checkPermission from '@/mixins/checkPermission'
 // console.log(obj)
 export default {
   name: 'Employees',
@@ -94,6 +105,7 @@ export default {
     AddEmployee,
     AssignRole
   },
+  mixins: [checkPermission],
   data() {
     return {
       page: 1,
@@ -226,10 +238,21 @@ export default {
     },
     // 显示分配角色弹框
     editRole(id) {
-      this.showRoleDialog = true
       this.userId = id
+      this.showRoleDialog = true
       // this.$refs.assignrole.getUserDetailById(id)
+      // this.showRoleDialog = false
     }
+    // 添加按钮禁用的控制 (或者 隐藏)
+    // 返回一个布尔值的函数,返回true,有权限,返回false 没有权限
+    // checkPermission(key) {
+    //   // 看传过来的key,在points数组中,是否存在
+    //   if (this.$store.getters.roles) {
+    //     return this.$store.getters.roles.points.includes(key)
+    //   } else {
+    //     return false
+    //   }
+    // }
   }
 }
 </script>

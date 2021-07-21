@@ -59,19 +59,19 @@ export const constantRoutes = [
         component: () => import('@/views/import')
       }
     ]
-  },
+  }
 
   // 404 page must be placed at the end !!!
   // 没有匹配到的页面,走404
-  { path: '*', redirect: '/404', hidden: true }
+  // { path: '*', redirect: '/404', hidden: true }
 ]
 
 const createRouter = () => new Router({
-  // mode: 'history', // require service support
+   mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
   routes: [
-    ...constantRoutes,
-    ...asyncRoutes
+    ...constantRoutes // 静态路由,首页
+    // ...asyncRoutes  // 所有的动态路由
   ]
 })
 

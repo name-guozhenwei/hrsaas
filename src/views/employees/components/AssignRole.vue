@@ -48,12 +48,9 @@ export default {
     // 使用el-dialog方法的@open,点击打开时发送请求,渲染数据
     dialogOpen() {
       this.loading = true
-      Promise.all([this.getRoleList(), this.getUserDetailById()].then(() => {
+      Promise.all([this.getRoleList(), this.getUserDetailById()]).then(() => {
         this.loading = false
-      }).catch(error => {
-        console.log(error)
       })
-      )
     },
     // 点击关闭分配角色的弹框
     closeDialog() {

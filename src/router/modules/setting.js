@@ -8,7 +8,7 @@ export default {
     // 公司设置默认首页
     {
       path: '',
-      name: 'setting',
+      name: 'settings',
       component: () => import('@/views/setting/index'),
       meta: { title: '公司设置', icon: 'setting' }
     }

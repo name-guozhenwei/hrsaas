@@ -19,7 +19,7 @@
               <el-table-column prop="description" label="描述" width="300" />
               <el-table-column label="操作" width="400">
                 <template #default="{row}">
-                  <el-button size="small" type="success">分配权限</el-button>
+                  <el-button size="small" type="success" @click="clickShowAssignDialog(row.id)">分配权限</el-button>
                   <el-button size="small" type="primary" @click="edit(row.id)">编辑</el-button>
                   <el-button size="small" type="danger" @click="delRole(row.id)">删除</el-button>
                 </template>
@@ -89,6 +89,37 @@
 
         </template>
       </el-dialog>
+      <!-- 分配权限弹框 -->
+      <el-dialog
+        title="分配权限"
+        :visible="showAssignDialog"
+        @close="closeAssignDialog"
+        @open="openAssignDialog"
+      >
+        <el-tree
+          ref="tree"
+          v-loading="treeLoading"
+          :data="permissionData"
+          :props="{ label: 'name'}"
+          :default-expand-all="true"
+          :show-checkbox="true"
+          :check-strictly="true"
+          node-key="id"
+        />
+        <template #footer>
+          <div style="text-align:right">
+            <el-button @click="closeAssignDialog">取消</el-button>
+            <el-button type="primary" @click="clickAssign">确定</el-button>
+          </div>
+        </template>
+      </el-dialog>
+      <!-- 树形控件显示 -->
+      <!--
+        show-checkbox 显示选择框
+        default-expand-all默认展开
+        check-strictly设置true,可以关闭父子关联
+        -->
+
     </div>
   </div>
 </template>
@@ -96,6 +127,9 @@
 <script>
 import { reqGetRoleList, reqDelRole, reqAddRole, reqGetRoleDetail, reqUpdateRole } from '@/api/setting'
 import { reqGetCompanyById } from '@/api/company'
+import { reqAssignPrem } from '@/api/setting'
+import { reqGetPermissionList } from '@/api/permission'
+import { tranListToTreeData } from '@/utils/index'
 import { mapState } from 'vuex'
 export default {
   name: 'Setting',
@@ -113,6 +147,10 @@ export default {
         mailbox: '',
         remarks: ''
       },
+      showAssignDialog: false, // 控制分配权限弹层的显示与隐藏
+      roleId: '', // 记录正在操作的角色
+      permissionData: [], // 存储权限数据
+      treeLoading: [], // 存储已选中的权限id列表
       // 校验的表单
       form: {
         name: '', // 角色名字
@@ -232,6 +270,37 @@ export default {
       // console.log(res)
       this.companyForm = res.data
       // console.log(this.companyForm)
+    },
+    // 点击显示分配权限的弹层
+    clickShowAssignDialog(id) {
+      this.roleId = id
+      this.showAssignDialog = true
+    },
+    // 点击关闭分配权限的弹层
+    closeAssignDialog() {
+      this.showAssignDialog = false
+    },
+    // 点击显示,发送请求,给弹层注册open事件,进行回显
+    async openAssignDialog() {
+      this.treeLoading = true
+      // 发送请求 获取权限列表
+      const { data: permissionData } = await reqGetPermissionList()
+      this.permissionData = tranListToTreeData(permissionData, '0')
+      // 发送请求, 获取已有权限
+      const { data: roleDetail } = await reqGetRoleDetail(this.roleId)
+      this.$refs.tree.setCheckedKeys(roleDetail.permIds)
+      this.treeLoading = false
+    },
+    // 点击确定分配权限
+    async clickAssign() {
+      // 1. 拿到选中的所有权限
+      const permIds = this.$refs.tree.getCheckedKeys()
+      // 2. 发送请求
+      await reqAssignPrem(this.roleId, permIds)
+      // console.log(res)
+      this.$message.success('分配权限成功')
+      // 调用关闭弹框的方法,关闭弹框
+      this.closeAssignDialog()
     }
 
   }

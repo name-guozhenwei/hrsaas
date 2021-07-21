@@ -1,13 +1,19 @@
 <template>
-  <div class="navbar">
+  <div class="navbar" :style="{background: $store.state.settings.theme}">
     <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
     <div class="app-breadcrumb">
-      江苏传智播客教育科技股份有限公司
-      <span class="breadBtn">体验版</span>
+      {{ $t('navbar.title') }}
+      <span class="breadBtn">{{ $t ('navbar.enjoy') }}</span>
     </div>
     <!-- <breadcrumb class="breadcrumb-container" /> -->
 
     <div class="right-menu">
+      <!-- 中英文切换语言包组件 -->
+      <Lang class="right-menu-item" />
+      <!-- 全屏组件 -->
+      <ScreenFull class="right-menu-item" />
+      <!-- 放置换肤插件 -->
+      <ThemePicker class="right-menu-item" style="padding-top: 11px" @change="changeTheme" />
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
           <img v-imgerror="defaultImg" :src="staffPhoto" class="user-avatar">
@@ -36,10 +42,16 @@
 import { mapGetters, mapActions } from 'vuex'
 import Hamburger from '@/components/Hamburger'
 import Img from '@/assets/common/leiou.jpeg'
-
+import ScreenFull from '@/components/ScreenFull/index.vue'
+import ThemePicker from '@/components/ThemePicker/index.vue'
+import Lang from '@/components/Lang'
 export default {
   components: {
-    Hamburger
+    Hamburger,
+    ScreenFull,
+    ThemePicker,
+    Lang
+
   },
   data() {
     return {
@@ -52,7 +64,8 @@ export default {
       'sidebar',
       'avatar',
       'name',
-      'staffPhoto'
+      'staffPhoto',
+      'routes'
     ])
   },
   created() {
@@ -67,12 +80,21 @@ export default {
       this.logout()
       this.$router.push('/login')
       this.$message.success('退出成功')
+    },
+    // 同步到 vuex 中, 提交了action
+    changeTheme(val) {
+      // 发布action,同步主题色到vuex中
+      this.$store.dispatch('settings/changeSetting', {
+        key: 'theme',
+        value: val
+      })
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+
 .navbar {
   height: 50px;
   overflow: hidden;
@@ -120,7 +142,9 @@ export default {
     float: right;
     height: 100%;
     line-height: 50px;
-
+    .right-menu-item {
+  vertical-align: middle !important;
+}
     &:focus {
       outline: none;
     }

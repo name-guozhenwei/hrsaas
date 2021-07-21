@@ -8,7 +8,7 @@ export default {
     // 社保默认首页
     {
       path: '',
-      name: 'social',
+      name: 'social_securitys',
       component: () => import('@/views/social/index'),
       meta: { title: '社保', icon: 'table' }
     }

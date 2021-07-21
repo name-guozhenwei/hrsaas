@@ -1,4 +1,5 @@
 import { reqLogin, reqGetUserInfo, reqGetBaseInfo } from '@/api/user'
+import { resetRouter } from '@/router'
 import { getToken, setToken, removeToken } from '@/utils/auth'
 
 const state = {
@@ -61,6 +62,12 @@ const actions = {
     context.commit('removeToken')
     // 删除个人资料
     context.commit('removeUserInfo')
+    // 重置理由
+    resetRouter()
+    // 重置 vuex 中的路由信息
+    context.commit('permission/setRoutes', [], { root: true })
+    // 清除主题色信息
+    context.commit('settings/resetTheme', null, { root: true })
   }
 }
 const getters = {}

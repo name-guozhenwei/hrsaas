@@ -15,6 +15,12 @@ import Components from './components'
 // 过滤器
 import * as filters from '@/filters' // 引用工具类
 import Print from 'vue-print-nb'
+import '@/styles/element-variables.scss'
+import i18n from '@/lang'
+Vue.use(ElementUI, {
+  i18n: (key, value) => i18n.t(key, value)
+})
+
 Vue.use(Print)
 Object.keys(filters).forEach(key => {
   // 注册过滤器
@@ -39,5 +45,6 @@ new Vue({
   el: '#app',
   router,
   store,
+  i18n,
   render: h => h(App)
 })

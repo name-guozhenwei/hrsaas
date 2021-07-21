@@ -8,7 +8,7 @@ export default {
     // 权限管理默认首页
     {
       path: '',
-      name: 'permission',
+      name: 'permissions',
       component: () => import('@/views/permission/index'),
       meta: { title: '权限管理', icon: 'lock' }
     }
