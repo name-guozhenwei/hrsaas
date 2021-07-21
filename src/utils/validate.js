@@ -15,5 +15,5 @@ export function isExternal(path) {
  * @returns {Boolean}
  */
 export function validMobile(str) {
-  return /^1[3-9]\d{9}&/.test(str) // 校验手机号
+  return /^1[3-9]\d{9}$/.test(str) // 校验手机号
 }

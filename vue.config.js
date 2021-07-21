@@ -5,6 +5,32 @@ const defaultSettings = require('./src/settings.js')
 function resolve(dir) {
   return path.join(__dirname, dir)
 }
+// 在开发环境时，没有必要使用CDN，此时我们可以使用环境变量来进行区分
+let externals = {}
+let cdn = { css: [], js: [] }
+const isProduction = process.env.NODE_ENV === 'production' // 判断是否是生产环境
+if (isProduction) {
+  externals = {
+    // key(要排除的包名), value(引入的CDN包的全局变量名)
+    'vue': 'Vue',
+    'element-ui': 'ELEMENT',
+    'xlsx': 'XLSX',
+    'moment': 'moment'
+  }
+  cdn = {
+    css: [
+      'https://unpkg.com/element-ui/lib/theme-chalk/index.css' // element-ui css 样式表
+    ],
+    js: [
+      // vue must at first!
+      'https://unpkg.com/vue/dist/vue.js', // vuejs
+      'https://unpkg.com/element-ui/lib/index.js', // element-ui js
+      'https://cdn.jsdelivr.net/npm/xlsx@0.16.6/dist/jszip.min.js',
+      'https://cdn.jsdelivr.net/npm/xlsx@0.16.6/dist/xlsx.full.min.js',
+      'https://cdn.bootcdn.net/ajax/libs/moment.js/2.29.1/moment.min.js'
+    ]
+  }
+}
 
 const name = defaultSettings.title || 'vue Admin Template' // page title
 
@@ -35,12 +61,22 @@ module.exports = {
     overlay: {
       warnings: false,
       errors: true
+    },
+    // 代理跨域的配置
+    proxy: {
+      // 当我们的本地的请求 有/api的时候，就会代理我们的请求地址向另外一个服务器发出请求
+      '/api': {
+        target: 'http://localhost:3000' // 跨域请求的地址
+      }
     }
   },
+
   configureWebpack: {
     // provide the app's title in webpack's name field, so that
     // it can be accessed in index.html to inject the correct title.
     name: name,
+    // 配置单页应用程序的也页面的标题
+    externals: externals,
     resolve: {
       alias: {
         '@': resolve('src')
@@ -58,6 +94,11 @@ module.exports = {
         include: 'initial'
       }
     ])
+    // 注入cdn变量 (打包时会执行) 好处：将来public/index.html 中可以使用这些变量的
+    config.plugin('html').tap(args => {
+      args[0].cdn = cdn // 配置cdn给插件
+      return args
+    })
 
     // when there are many pages, it will cause too many meaningless requests
     config.plugins.delete('prefetch')

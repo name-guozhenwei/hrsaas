@@ -1,5 +1,6 @@
 <template>
   <section class="app-main">
+    <!-- 动画效果 -->
     <transition name="fade-transform" mode="out-in">
       <router-view :key="key" />
     </transition>
@@ -10,6 +11,11 @@
 export default {
   name: 'AppMain',
   computed: {
+    cachedViews() {
+      return this.$store.state.tagsView.cachedViews.map(item => {
+        return item[0].toUpperCase() + item.slice(1)
+      })
+    },
     key() {
       return this.$route.path
     }

@@ -1,0 +1,35 @@
+// 所有的主题中，默认的颜色效果 （百搭）
+.default-theme {
+    .breadBtn {
+      background-color: deepskyblue!important;
+      color: #fff;
+    }
+  }
+  
+  // 紫色调
+  .purple-theme {
+    .breadBtn {
+      background-color: orange!important;
+      color: #fff;
+    }
+    .sidebar-container {
+      background: -webkit-linear-gradient(bottom,  #AEA3F5, #6959cd)!important;
+    }
+  }
+  
+  // 红色调
+  .red-theme {
+    .breadBtn {
+      background-color: green!important;
+      color: #fff;
+    }
+  }
+  
+  // 黑色调
+  .black-theme {
+    .breadBtn {
+      background-color: #fff!important;
+      color: #000;
+    }
+  }
+  

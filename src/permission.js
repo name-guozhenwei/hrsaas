@@ -1,64 +1,60 @@
-// import router from './router'
-// import store from './store'
-// import { Message } from 'element-ui'
-// import NProgress from 'nprogress' // progress bar
-// import 'nprogress/nprogress.css' // progress bar style
-// import { getToken } from '@/utils/auth' // get token from cookie
-// import getPageTitle from '@/utils/get-page-title'
+import router from '@/router'
+import store from '@/store'
+// 引入一份进度条
+import NProgress from 'nprogress'
+// 引入进度条样式
+import 'nprogress/nprogress.css'
+// import { asyncRoutes } from '@/router/index'
 
-// NProgress.configure({ showSpinner: false }) // NProgress Configuration
+// 导航前置守卫
+// 定义白名单 所有不受权限控制的页面
+const whiteList = ['/login', '/404']
+// 导航前置守卫
+router.beforeEach(async(to, from, next) => {
+  // console.log(to)
+  NProgress.start()
+  const token = store.getters.token
+  // console.log(token)
+  // 判断有无token
+  if (token) {
+    // 判断是不是去登录页
+    if (to.path === '/login') {
+      next('/') // 引导到首页
+      NProgress.done()
+    } else {
+      // 如果当前vuex中已经有用户资料,就不需要在获取了
+      if (!store.state.user.userInfo.userId) {
+      // 调用获取信息的action
+        const { roles: { menus }} = await store.dispatch('user/getUserInfo')
+        // console.log(res)
+        // 调用action同步到vuex中
+        const otherRoutes = await store.dispatch('permission/filterRoutes', menus)
+        // 拿到权限信息之后,应该根据权限信息,从动态路由模块中筛选出,需要追加的路由
+        // 追加到routes规则中,addRoutes
+        router.addRoutes(
+          [...otherRoutes,
+            { path: '*', redirect: '/404', hidden: true }
+          ]
+        )
+        next({
+          ...to, // next({...to}) 的目的,是保证路由添加完了在进行页面(可以理解为重新一次)
+          replace: true // 重进一次,不保留重复历史
+        })
+        return
+      }
+      next() // 放行
+    }
+  } else {
+    // 看在不在白名单中(免登陆即可访问的页面)
+    if (whiteList.includes(to.path)) {
+      next()
+    } else {
+      next('/login')
+      NProgress.done()
+    }
+  }
+})
+router.afterEach((to, from) => {
+  NProgress.done()
+})
 
-// const whiteList = ['/login'] // no redirect whitelist
-
-// router.beforeEach(async(to, from, next) => {
-//   // start progress bar
-//   NProgress.start()
-
-//   // set page title
-//   document.title = getPageTitle(to.meta.title)
-
-//   // determine whether the user has logged in
-//   const hasToken = getToken()
-
-//   if (hasToken) {
-//     if (to.path === '/login') {
-//       // if is logged in, redirect to the home page
-//       next({ path: '/' })
-//       NProgress.done()
-//     } else {
-//       const hasGetUserInfo = store.getters.name
-//       if (hasGetUserInfo) {
-//         next()
-//       } else {
-//         try {
-//           // get user info
-//           await store.dispatch('user/getInfo')
-
-//           next()
-//         } catch (error) {
-//           // remove token and go to login page to re-login
-//           await store.dispatch('user/resetToken')
-//           Message.error(error || 'Has Error')
-//           next(`/login?redirect=${to.path}`)
-//           NProgress.done()
-//         }
-//       }
-//     }
-//   } else {
-//     /* has no token*/
-
-//     if (whiteList.indexOf(to.path) !== -1) {
-//       // in the free login whitelist, go directly
-//       next()
-//     } else {
-//       // other pages that do not have permission to access are redirected to the login page.
-//       next(`/login?redirect=${to.path}`)
-//       NProgress.done()
-//     }
-//   }
-// })
-
-// router.afterEach(() => {
-//   // finish progress bar
-//   NProgress.done()
-// })
